@@ -217,7 +217,6 @@ int main(int argc, char *argv[])
 
   setup_display();
   scan_windows();
-  keys_init();
 
   throwAllUnmapEvent();
   throwUnmaps = 0;

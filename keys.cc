@@ -7,39 +7,43 @@
 #include <X11/Xutil.h>
 #include <X11/keysym.h>
 
+#include <vector>
+using namespace std;
+
 #define SHIFT (1 << 24)
 #define CTRL (1 << 25)
 #define ALT (1 << 26)
 
-#define KEY(K, E, A) K,
-static int keys_key[] = {
+class key_entry {
+public:
+  int code;
+
+  key_entry(int key_code, void (*key_ev)(const string&), const string key_arg):
+    code {key_code}, event_fn {key_ev}, arg {key_arg} {};
+
+  void exe();
+
+private:
+  void (*event_fn)(const string&);
+  const string arg;
+};
+
+#define KEY(c, e, a) key_entry(c, e, a),
+static vector<class key_entry> keys = {
 #include "config_key.def"
 };
 #undef KEY
 
-#define KEY(K, E, A) E,
-static void (*keys_ev[]) (EvArgs) = {
-#include "config_key.def"
-};
-#undef KEY
-
-#define KEY(K, E, A) A,
-static EvArgs keys_args[] = {
-#include "config_key.def"
-};
-#undef KEY
-
-static Key* keys;
-static int key_len;
-
-static int keys_run_impl(int k)
+void key_entry::exe()
 {
-  for (int i = 0; i < key_len; i++) {
-    if (keys[i].key == -1)
-      continue;
+  event_fn(arg);
+}
 
-    if (keys[i].key == k) {
-      (*keys[i].ev)(keys[i].arg);
+static int keys_run_impl(int code)
+{
+  for (auto &k: keys) {
+    if (k.code == code) {
+      k.exe();
       return 0;
     }
   }
@@ -83,18 +87,4 @@ void keys_run_button(XButtonEvent* be) {
     k |= ALT;
 
   keys_run_impl(k);
-}
-
-void keys_init(void)
-{
-  key_len = sizeof(keys_key) / sizeof(keys_key[0]);
-  keys = (Key*)calloc(sizeof(Key), key_len);
-
-  for (int i = 0; i < key_len; i++) {
-    keys[i].key = keys_key[i];
-    keys[i].ev = keys_ev[i];
-    keys[i].arg =
-      (char*)calloc(sizeof(char), strlen(keys_args[i]) + 1);
-    strcpy(keys[i].arg, keys_args[i]);
-  }
 }

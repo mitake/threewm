@@ -12,6 +12,9 @@
 #include <X11/Xatom.h>
 #include <X11/cursorfont.h>
 
+#include <ios>
+using namespace std;
+
 static Client* cl;
 
 int driveEnterNotify = 1;
@@ -176,18 +179,18 @@ static void do_move(void)
   driveEnterNotify = 0;
 }
 
-void ev_move_window_x(EvArgs args)
+void ev_move_window_x(const string& args)
 {
   if (cl != 0) {
-    cl->x += atoi(args);
+    cl->x += atoi(args.c_str());
     do_move();
   }
 }
 
-void ev_move_window_y(EvArgs args)
+void ev_move_window_y(const string& args)
 {
   if (cl != 0) {
-    cl->y += atoi(args);
+    cl->y += atoi(args.c_str());
     do_move();
   }
 }
@@ -200,29 +203,29 @@ static void do_resize(void)
   driveEnterNotify = 0;
 }
 
-void ev_resize_window_x(EvArgs args)
+void ev_resize_window_x(const string& args)
 {
   if (cl != 0) {
-    if((cl->width + atoi(args)) < 0)
+    if((cl->width + atoi(args.c_str())) < 0)
       return;
 
-    cl->width += atoi(args);
+    cl->width += atoi(args.c_str());
     do_resize();
   }
 }
 
-void ev_resize_window_y(EvArgs args)
+void ev_resize_window_y(const string& args)
 {
   if (cl != 0) {
-    if((cl->height + atoi(args)) < 0)
+    if((cl->height + atoi(args.c_str())) < 0)
       return;
 
-    cl->height += atoi(args);
+    cl->height += atoi(args.c_str());
     do_resize();
   }
 }
 
-void ev_move_window_upleft(EvArgs args)
+void ev_move_window_upleft(const string& args)
 {
   if (cl != 0) {
     cl->x = cl->border;
@@ -231,7 +234,7 @@ void ev_move_window_upleft(EvArgs args)
   }
 }
 
-void ev_move_window_upright(EvArgs args)
+void ev_move_window_upright(const string& args)
 {
   if (cl != 0) {
     cl->x = DisplayWidth(dpy, screen) - cl->width - cl->border;
@@ -240,7 +243,7 @@ void ev_move_window_upright(EvArgs args)
   }
 }
 
-void ev_move_window_downleft(EvArgs args)
+void ev_move_window_downleft(const string& args)
 {
   if (cl != 0) {
     cl->x = cl->border;
@@ -250,7 +253,7 @@ void ev_move_window_downleft(EvArgs args)
   }
 }
 
-void ev_move_window_downright(EvArgs args)
+void ev_move_window_downright(const string& args)
 {
   if (cl != 0) {
     cl->x = DisplayWidth(dpy, screen) - cl->width - cl->border;
@@ -260,19 +263,19 @@ void ev_move_window_downright(EvArgs args)
   }
 }
 
-void ev_delete_window(EvArgs args)
+void ev_delete_window(const string& args)
 {
   if (cl != 0)
     send_wm_delete(cl);
 }
 
-void ev_info_window(EvArgs args)
+void ev_info_window(const string& args)
 {
   if (cl != 0)
     show_info(cl);
 }
 
-void ev_maximise_window(EvArgs args)
+void ev_maximise_window(const string& args)
 {
   if (cl != 0) {
     maximise_horiz(cl);
@@ -284,7 +287,7 @@ void ev_maximise_window(EvArgs args)
   }
 }
 
-void ev_maximise_window_vert(EvArgs args)
+void ev_maximise_window_vert(const string& args)
 {
   if (cl != 0) {
     maximise_vert(cl);
@@ -294,7 +297,7 @@ void ev_maximise_window_vert(EvArgs args)
   }
 }
 
-void ev_fix_window(EvArgs args)
+void ev_fix_window(const string& args)
 {
   if (cl != 0) {
     if (cl->vdesk == vdesk || cl->vdesk == -1) {
@@ -319,31 +322,31 @@ static void spawn(char* cmd[])
   }
 }
 
-void ev_exec_command(EvArgs args)
+void ev_exec_command(const string& args)
 {
   char *a[64];
-  char *tmp = (char *)calloc(strlen(args) + 1, sizeof(char));
+  char *tmp = (char *)calloc(strlen(args.c_str()) + 1, sizeof(char));
   int i = 0;
 
-  strcpy(tmp, args);
+  strcpy(tmp, args.c_str());
   a[i++] = strtok(tmp, " ");
   while ((a[i++] = strtok(NULL, " ")) != NULL) {}
   spawn(a);
   free(tmp);
 }
 
-void ev_next_focus(EvArgs args)
+void ev_next_focus(const string& args)
 {
   next(cl);
 }
 
-void ev_switch_vdesk(EvArgs args)
+void ev_switch_vdesk(const string& args)
 {
   driveEnterNotify = 0;
-  switch_vdesk(atoi(args));
+  switch_vdesk(atoi(args.c_str()));
 }
 
-void ev_next_vdesk(EvArgs args)
+void ev_next_vdesk(const string& args)
 {
   driveEnterNotify = 0;
 
@@ -353,7 +356,7 @@ void ev_next_vdesk(EvArgs args)
     switch_vdesk(1);
 }
 
-void ev_prev_vdesk(EvArgs args)
+void ev_prev_vdesk(const string& args)
 {
   driveEnterNotify = 0;
 
@@ -363,61 +366,61 @@ void ev_prev_vdesk(EvArgs args)
     switch_vdesk(opt_vd);
 }
 
-void ev_fix_next_vdesk(EvArgs args)
+void ev_fix_next_vdesk(const string& args)
 {
   ev_fix_window(args);
   ev_next_vdesk(args);
   ev_fix_window(args);
 }
 
-void ev_fix_prev_vdesk(EvArgs args)
+void ev_fix_prev_vdesk(const string& args)
 {
   ev_fix_window(args);
   ev_prev_vdesk(args);
   ev_fix_window(args);
 }
 
-void ev_up_focus(EvArgs args)
+void ev_up_focus(const string& args)
 {
   arrow_next(cl, 0, -1);
 }
 
-void ev_down_focus(EvArgs args)
+void ev_down_focus(const string& args)
 {
   arrow_next(cl, 0, 1);
 }
 
-void ev_right_focus(EvArgs args)
+void ev_right_focus(const string& args)
 {
   arrow_next(cl, 1, 0);
 }
 
-void ev_left_focus(EvArgs args)
+void ev_left_focus(const string& args)
 {
   arrow_next(cl, -1, 0);
 }
 
-void ev_upleft_focus(EvArgs args)
+void ev_upleft_focus(const string& args)
 {
   arrow_next(cl, -1, -1);
 }
 
-void ev_upright_focus(EvArgs args)
+void ev_upright_focus(const string& args)
 {
   arrow_next(cl, 1, -1);
 }
 
-void ev_downleft_focus(EvArgs args)
+void ev_downleft_focus(const string& args)
 {
   arrow_next(cl, -1, 1);
 }
 
-void ev_downright_focus(EvArgs args)
+void ev_downright_focus(const string& args)
 {
   arrow_next(cl, 1, 1);
 }
 
-void ev_wm_quit(EvArgs args)
+void ev_wm_quit(const string& args)
 {
   quit_nicely();
 }
@@ -428,36 +431,36 @@ void warp_pointer(Window w, int x, int y)
   XWarpPointer(dpy, None, w, 0, 0, 0, 0, x, y);
 }
 
-void ev_warp_pointer_x(EvArgs args)
+void ev_warp_pointer_x(const string& args)
 {
-  warp_pointer(None, atoi(args), 0);
+  warp_pointer(None, atoi(args.c_str()), 0);
 }
 
-void ev_warp_pointer_y(EvArgs args)
+void ev_warp_pointer_y(const string& args)
 {
-  warp_pointer(None, 0, atoi(args));
+  warp_pointer(None, 0, atoi(args.c_str()));
 }
 
-void ev_raise_window(EvArgs args)
+void ev_raise_window(const string& args)
 {
   if (cl) XRaiseWindow(dpy, cl->parent);
 }
 
-void ev_lower_window(EvArgs args)
+void ev_lower_window(const string& args)
 {
   if (cl) XLowerWindow(dpy, cl->parent);
 }
 
-void ev_mouse_move(EvArgs args)
+void ev_mouse_move(const string& args)
 {
   if (cl) move(cl, 0);
 }
 
-void ev_mouse_resize(EvArgs args)
+void ev_mouse_resize(const string& args)
 {
   if (cl) resize(cl, 0);
 }
 
-void ev_do_nothing(EvArgs args)
+void ev_do_nothing(const string& args)
 {
 }
