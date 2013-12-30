@@ -1,3 +1,7 @@
+// Local Variables:
+// mode: c++
+// End:
+
 #ifndef SCREEN_H_
 #define SCREEN_H_
 

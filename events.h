@@ -1,3 +1,7 @@
+// Local Variables:
+// mode: c++
+// End:
+
 #ifndef EVENTS_H_
 #define EVENTS_H_
 

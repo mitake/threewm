@@ -1,3 +1,7 @@
+// Local Variables:
+// mode: c++
+// End:
+
 #ifndef THREEWM_H
 #define THREEWM_H
 

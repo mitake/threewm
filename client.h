@@ -1,3 +1,7 @@
+// Local Variables:
+// mode: c++
+// End:
+
 #ifndef CLIENT_H_
 #define CLIENT_H_
 
