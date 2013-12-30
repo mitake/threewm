@@ -35,11 +35,11 @@ int vdesk = 1;
 char throwUnmaps;
 Client **prev_focused;
 
-static char *opt_display = "";
+static const char *opt_display = "";
 static const char *opt_font = DEF_FONT;
 static const char *opt_fg = DEF_FG;
 static const char *opt_bg = DEF_BG;
-static char *opt_fc = DEF_FC;
+static const char *opt_fc = DEF_FC;
 static int wm_running;
 
 static void cleanup(void)
@@ -159,7 +159,7 @@ static void scan_windows(void)
 
   XQueryTree(dpy, root, &dw1, &dw2, &wins, &nwins);
 
-  for (int i = 0; i < nwins; i++) {
+  for (unsigned int i = 0; i < nwins; i++) {
     XGetWindowAttributes(dpy, wins[i], &attr);
 
     if (!attr.override_redirect && attr.map_state == IsViewable)
